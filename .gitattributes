@@ -1,1 +1,2 @@
-internal/template/assets/**/* linguist-vendored
+internal/assets/**/* linguist-vendored
+internal/templates/* linguist-vendored
