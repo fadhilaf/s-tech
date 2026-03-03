@@ -1,0 +1,53 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+// Use enums for better data integrity
+Enum order_status {
+  pending
+  processing
+  delivered
+}
+
+Table users {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(255) [not null]
+  email varchar(255) [unique, not null]
+  password_hash varchar(255) [not null]
+  address varchar(255) [not null]
+  phone varchar(255) [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table products {
+  id uuid [pk, default: `gen_random_uuid()`]
+  name varchar(255) [not null]
+  stock integer [not null]
+  is_service boolean [not null, default: false]
+  description varchar(255) [not null]
+  image varchar(255) [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table product_prices {
+  id uuid [pk, default: `gen_random_uuid()`]
+  product_id uuid [ref: > products.id, not null]
+  price integer [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table orders {
+  id uuid [pk, default: `gen_random_uuid()`]
+  user_id uuid [ref: > users.id, not null]
+  status order_status [not null, default: 'pending']
+  description varchar(255) [not null]
+  last_seen timestamp [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+}
+
+Table order_items {
+  id uuid [pk, default: `gen_random_uuid()`]
+  order_id uuid [ref: > orders.id, not null]
+  product_price_id uuid [ref: > product_prices.id, not null, note: 'id ini akan selalu diupdate pada harga paling baru jika status belum processed/masih pending']
+  quantity integer [not null]
+  created_at timestamp [not null, default: `now()`]
+}

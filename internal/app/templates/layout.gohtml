@@ -1,0 +1,103 @@
+{{ define "navbar" }}
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container px-4 px-lg-5">
+      <a class="navbar-brand ms-2 fw-bold" href="/">
+        <img src="/assets/assets/img/81042.jpg" alt="S-TECH" height="40px">
+        S-TECH
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+          class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/">
+              Home
+            </a>
+          </li>
+          {{ if .Name }}
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="/pesanan">
+                Pesanan
+              </a>
+            </li>
+            <li class="nav-item">
+              <form action="/api/auth/logout" method="POST">
+                <button class="nav-link bg-white border-0" aria-current="page" type="submit">
+                  Logout
+                </button>
+              </form>
+            </li>
+          {{ else }}
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/login">
+              Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/register">
+              Register
+            </a>
+          </li>
+          {{ end }}
+        </ul>
+        {{ if .Name }}
+        <div>
+          <p class="my-auto">Halo, {{ .Name }}</p>
+        </div>
+        {{ end }}
+      </div>
+    </div>
+  </nav>
+{{ end }}
+
+{{ define "navbar_admin" }}
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container px-4 px-lg-5">
+      <a class="navbar-brand ms-2 fw-bold" href="/">
+        <img src="/assets/assets/img/81042.jpg" alt="S-TECH" height="40px">
+        S-TECH
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+          class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/admin/dashboard">
+              Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/admin/tambah">
+              Tambah Produk
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/admin/pesanan">
+              Pesanan
+            </a>
+          </li>
+          <li class="nav-item">
+            <form action="/api/auth/logout" method="POST">
+              <button class="nav-link bg-white border-0" aria-current="page" type="submit">
+                Logout
+              </button>
+            </form>
+          </li>
+        </ul>
+        <div>
+          <p class="my-auto">Admin S-TECH</p>
+        </div>
+      </div>
+    </div>
+  </nav>
+{{ end }}
+
+{{ define "footer" }}
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; S-TECH 2026</p>
+    </div>
+  </footer>
+{{ end }}

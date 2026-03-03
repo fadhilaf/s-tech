@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Admin Dashboard</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="/assets/assets/favicon.ico" />
+  <!-- Bootstrap icons-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="/assets/assets/css/styles.css" rel="stylesheet" />
+  <style>
+    .gradient-custom {
+      /* fallback for old browsers */
+      background: #6a11cb;
+
+      /* Chrome 10-25, Safari 5.1-6 */
+      background: -webkit-linear-gradient(to right,
+          rgba(106, 17, 203, 1),
+          rgba(37, 117, 252, 1));
+
+      /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+      background: linear-gradient(to right,
+          rgba(106, 17, 203, 1),
+          rgba(37, 117, 252, 1));
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation-->
+  {{ template "navbar_admin" . }}
+  <!-- Header-->
+  <header class="py-5 gradient-custom">
+    <div class="container px-4 px-lg-5 my-5">
+      <div class="text-center text-white">
+        <h1 class="display-4 fw-bolder"> Dashboard S-TECH </h1>
+        <form action="/admin/dashboard" method="GET" class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+          <button class="btn border-2 border-white" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+      </div>
+    </div>
+  </header>
+  <div class="pt-5">
+    {{if .Message}}
+    <div class="alert alert-primary" role="alert">
+      {{.Message}}
+    </div>
+    {{end}}
+  </div>
+  <!-- Section-->
+  <section class="py-5">
+    {{ if .Search }}
+    <h2 class="text-center">Hasil pencarian produk: {{ .Search }}</h2>
+    {{ else }}
+    <h2 class="text-center">Daftar Produk</h2>
+    {{ end }}
+    <div class="m-4">
+      {{ if eq .Amount 0 }}
+      <h3 class="text-center">Tidak ditemukan produk dengan keyword "{{ .Search }}"</h3>
+      {{ else }}
+      <h3 class="text-center">Total produk: {{ .Amount }}</h3>
+      {{ end }}
+    </div>
+    <div class="container px-4 px-lg-5 mt-5">
+      <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+        {{ range $index, $product := .Products }}
+        {{ with $product }}
+        <!-- Card Product -->
+        <div class="col mb-5">
+          <div class="card">
+            <!-- Product image-->
+            <img class="card-img-top" src="/public/img/{{ .Image }}" alt="..." />
+            <!-- Product details-->
+            <div class="card-body p-4">
+              <div class="text-center">
+                <!-- Product name-->
+                <h5 class="fw-bolder">{{ .Name }}</h5>
+                <!-- Product price-->
+                {{ if .IsService }}
+                Rp {{ .Price }} / Jam
+                {{ else }}
+                Rp {{ .Price }}
+                {{ end }}
+              </div>
+              <p class="pt-2 card-text">Deskripsi: {{ .Description }}</p>
+            </div>
+            <!-- Product actions-->
+            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+              <div class="text-center">
+                {{ if .IsService }}
+                Kuota: {{ .Stock }} Tim
+                {{ else }}
+                Stok: {{ .Stock }} Unit
+                {{ end }}
+                <a class="btn btn-outline-dark mt-auto" href="#" alt="{{ .Name }}">Edit</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Card Product Selesai -->
+        {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </section>
+  <!-- Footer-->
+  {{ template "footer" }}
+  <!-- Bootstrap core JS-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

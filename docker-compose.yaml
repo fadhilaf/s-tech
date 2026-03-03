@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "${POSTGRES_PORT}:5432"
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ${POSTGRES_MIGRATE_PATH}:/migrations
+    command: 
+      -path=/migrations/ 
+      -database "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable" up
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    build: .
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    environment:
+      # Aplikasi Go kamu harus pakai hostname "postgres" saat di Docker
+      POSTGRES_CONNECTION_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+      IS_MIGRATE_INIT: false
+      APP_PORT: ${APP_PORT}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully

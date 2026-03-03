@@ -1,0 +1,22 @@
+package usecase
+
+import (
+	"github.com/fadhilaf/s-tech/internal/model"
+	"github.com/fadhilaf/s-tech/internal/repository"
+)
+
+type ProductUsecase interface {
+	CreateProduct(req model.CreateProductRequest) model.WebServiceResponse
+}
+
+var _ ProductUsecase = &productUsecaseImpl{}
+
+func NewProductUsecase(store repository.Store) ProductUsecase {
+	return &productUsecaseImpl{
+		Store: store,
+	}
+}
+
+type productUsecaseImpl struct {
+	repository.Store
+}
