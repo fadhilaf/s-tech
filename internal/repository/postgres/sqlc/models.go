@@ -23,12 +23,19 @@ type Order struct {
 type Product struct {
 	ID          uuid.UUID
 	Name        string
-	Price       int32
 	Stock       int32
 	IsService   bool
 	Description string
 	Image       string
 	CreatedAt   time.Time
+}
+
+type ProductPrice struct {
+	ID            uuid.UUID
+	ProductID     uuid.UUID
+	Price         int32
+	EffectiveDate time.Time
+	CreatedAt     time.Time
 }
 
 type User struct {

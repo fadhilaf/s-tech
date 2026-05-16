@@ -8,36 +8,57 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
-const createProduct = `-- name: CreateProduct :execresult
+const createProduct = `-- name: CreateProduct :one
 INSERT INTO products (
-  name, price, stock, is_service, description, image
+  name, stock, is_service, description, image
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5
 )
+RETURNING id
 `
 
 type CreateProductParams struct {
 	Name        string
-	Price       int32
 	Stock       int32
 	IsService   bool
 	Description string
 	Image       string
 }
 
-func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createProduct,
+func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, createProduct,
 		arg.Name,
-		arg.Price,
 		arg.Stock,
 		arg.IsService,
 		arg.Description,
 		arg.Image,
 	)
+	var id uuid.UUID
+	err := row.Scan(&id)
+	return id, err
+}
+
+const createProductPrice = `-- name: CreateProductPrice :execresult
+INSERT INTO product_prices (
+    product_id, price, effective_date
+) VALUES (
+    $1, $2, $3
+)
+`
+
+type CreateProductPriceParams struct {
+	ProductID     uuid.UUID
+	Price         int32
+	EffectiveDate time.Time
+}
+
+func (q *Queries) CreateProductPrice(ctx context.Context, arg CreateProductPriceParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createProductPrice, arg.ProductID, arg.Price, arg.EffectiveDate)
 }
 
 const deleteProduct = `-- name: DeleteProduct :exec
@@ -51,28 +72,52 @@ func (q *Queries) DeleteProduct(ctx context.Context, id uuid.UUID) error {
 }
 
 const getProduct = `-- name: GetProduct :many
-SELECT id, name, price, stock, is_service, description, image, created_at FROM products
-ORDER BY created_at DESC
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+)
+ORDER BY p.created_at DESC
 `
 
-func (q *Queries) GetProduct(ctx context.Context) ([]Product, error) {
+type GetProductRow struct {
+	ID           uuid.UUID
+	Name         string
+	Stock        int32
+	IsService    bool
+	Description  string
+	Image        string
+	CurrentPrice int32
+}
+
+func (q *Queries) GetProduct(ctx context.Context) ([]GetProductRow, error) {
 	rows, err := q.db.QueryContext(ctx, getProduct)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Product
+	var items []GetProductRow
 	for rows.Next() {
-		var i Product
+		var i GetProductRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Price,
 			&i.Stock,
 			&i.IsService,
 			&i.Description,
 			&i.Image,
-			&i.CreatedAt,
+			&i.CurrentPrice,
 		); err != nil {
 			return nil, err
 		}
@@ -88,71 +133,145 @@ func (q *Queries) GetProduct(ctx context.Context) ([]Product, error) {
 }
 
 const getProductById = `-- name: GetProductById :one
-SELECT id, name, price, stock, is_service, description, image, created_at FROM products
-WHERE id = $1 LIMIT 1
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE p.id = $1
+  AND pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+  )
+LIMIT 1
 `
 
-func (q *Queries) GetProductById(ctx context.Context, id uuid.UUID) (Product, error) {
+type GetProductByIdRow struct {
+	ID           uuid.UUID
+	Name         string
+	Stock        int32
+	IsService    bool
+	Description  string
+	Image        string
+	CurrentPrice int32
+}
+
+func (q *Queries) GetProductById(ctx context.Context, id uuid.UUID) (GetProductByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getProductById, id)
-	var i Product
+	var i GetProductByIdRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Price,
 		&i.Stock,
 		&i.IsService,
 		&i.Description,
 		&i.Image,
-		&i.CreatedAt,
+		&i.CurrentPrice,
 	)
 	return i, err
 }
 
 const getProductByName = `-- name: GetProductByName :one
-SELECT id, name, price, stock, is_service, description, image, created_at FROM products
-WHERE name = $1 LIMIT 1
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE p.name = $1
+  AND pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+  )
+LIMIT 1
 `
 
-func (q *Queries) GetProductByName(ctx context.Context, name string) (Product, error) {
+type GetProductByNameRow struct {
+	ID           uuid.UUID
+	Name         string
+	Stock        int32
+	IsService    bool
+	Description  string
+	Image        string
+	CurrentPrice int32
+}
+
+func (q *Queries) GetProductByName(ctx context.Context, name string) (GetProductByNameRow, error) {
 	row := q.db.QueryRowContext(ctx, getProductByName, name)
-	var i Product
+	var i GetProductByNameRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Price,
 		&i.Stock,
 		&i.IsService,
 		&i.Description,
 		&i.Image,
-		&i.CreatedAt,
+		&i.CurrentPrice,
 	)
 	return i, err
 }
 
 const getProductByQuery = `-- name: GetProductByQuery :many
-SELECT id, name, price, stock, is_service, description, image, created_at FROM products
-WHERE name ILIKE $1
-ORDER BY name
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE p.name ILIKE $1
+  AND pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+  )
+ORDER BY p.name
 `
 
-func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]Product, error) {
+type GetProductByQueryRow struct {
+	ID           uuid.UUID
+	Name         string
+	Stock        int32
+	IsService    bool
+	Description  string
+	Image        string
+	CurrentPrice int32
+}
+
+func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]GetProductByQueryRow, error) {
 	rows, err := q.db.QueryContext(ctx, getProductByQuery, name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Product
+	var items []GetProductByQueryRow
 	for rows.Next() {
-		var i Product
+		var i GetProductByQueryRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.Price,
 			&i.Stock,
 			&i.IsService,
 			&i.Description,
 			&i.Image,
-			&i.CreatedAt,
+			&i.CurrentPrice,
 		); err != nil {
 			return nil, err
 		}
@@ -170,17 +289,15 @@ func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]Product
 const updateProduct = `-- name: UpdateProduct :execresult
 UPDATE products SET
   name = $2,
-  price = $3,
-  stock = $4,
-  description = $5,
-  image = $6
+  stock = $3,
+  description = $4,
+  image = $5
 WHERE id = $1
 `
 
 type UpdateProductParams struct {
 	ID          uuid.UUID
 	Name        string
-	Price       int32
 	Stock       int32
 	Description string
 	Image       string
@@ -190,11 +307,27 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (s
 	return q.db.ExecContext(ctx, updateProduct,
 		arg.ID,
 		arg.Name,
-		arg.Price,
 		arg.Stock,
 		arg.Description,
 		arg.Image,
 	)
+}
+
+const updateProductPrice = `-- name: UpdateProductPrice :execresult
+INSERT INTO product_prices (
+    product_id, price, effective_date
+) VALUES (
+    $1, $2, NOW()
+)
+`
+
+type UpdateProductPriceParams struct {
+	ProductID uuid.UUID
+	Price     int32
+}
+
+func (q *Queries) UpdateProductPrice(ctx context.Context, arg UpdateProductPriceParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateProductPrice, arg.ProductID, arg.Price)
 }
 
 const updateProductStock = `-- name: UpdateProductStock :execresult

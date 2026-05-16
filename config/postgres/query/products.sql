@@ -1,35 +1,111 @@
--- name: CreateProduct :execresult
+-- name: CreateProduct :one
 INSERT INTO products (
-  name, price, stock, is_service, description, image
+  name, stock, is_service, description, image
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5
+)
+RETURNING id;
+
+-- name: CreateProductPrice :execresult
+INSERT INTO product_prices (
+    product_id, price, effective_date
+) VALUES (
+    $1, $2, $3
 );
 
 -- name: GetProduct :many
-SELECT * FROM products
-ORDER BY created_at DESC;
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+)
+ORDER BY p.created_at DESC;
 
 -- name: GetProductById :one
-SELECT * FROM products
-WHERE id = $1 LIMIT 1;
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE p.id = $1
+  AND pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+  )
+LIMIT 1;
 
 -- name: GetProductByName :one
-SELECT * FROM products
-WHERE name = $1 LIMIT 1;
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE p.name = $1
+  AND pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+  )
+LIMIT 1;
 
 -- name: GetProductByQuery :many
-SELECT * FROM products
-WHERE name ILIKE $1
-ORDER BY name;
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE p.name ILIKE $1
+  AND pp.effective_date = (
+    SELECT MAX(effective_date)
+    FROM product_prices
+    WHERE product_id = p.id
+      AND effective_date <= NOW()
+  )
+ORDER BY p.name;
 
 -- name: UpdateProduct :execresult
 UPDATE products SET
   name = $2,
-  price = $3,
-  stock = $4,
-  description = $5,
-  image = $6
+  stock = $3,
+  description = $4,
+  image = $5
 WHERE id = $1;
+
+-- name: UpdateProductPrice :execresult
+INSERT INTO product_prices (
+    product_id, price, effective_date
+) VALUES (
+    $1, $2, NOW()
+);
 
 -- name: UpdateProductStock :execresult
 UPDATE products SET

@@ -24,7 +24,7 @@ func (usecase *viewUsecaseImpl) GetProductByKeyword(req model.GetProductByKeywor
 		products[i] = model.Product{
 			ID:          product.ID,
 			Name:        product.Name,
-			Price:       utils.AddCommas(int(product.Price)),
+			CurrentPrice:product.CurrentPrice,
 			Stock:       product.Stock,
 			IsService:   product.IsService,
 			Description: product.Description,

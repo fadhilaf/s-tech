@@ -13,7 +13,8 @@ import (
 
 type Querier interface {
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (sql.Result, error)
-	CreateProduct(ctx context.Context, arg CreateProductParams) (sql.Result, error)
+	CreateProduct(ctx context.Context, arg CreateProductParams) (uuid.UUID, error)
+	CreateProductPrice(ctx context.Context, arg CreateProductPriceParams) (sql.Result, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error)
 	DeleteOrder(ctx context.Context, id uuid.UUID) error
 	DeleteProduct(ctx context.Context, id uuid.UUID) error
@@ -21,16 +22,17 @@ type Querier interface {
 	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrders(ctx context.Context) ([]Order, error)
 	GetOrdersByUserId(ctx context.Context, userID uuid.UUID) ([]Order, error)
-	GetProduct(ctx context.Context) ([]Product, error)
-	GetProductById(ctx context.Context, id uuid.UUID) (Product, error)
-	GetProductByName(ctx context.Context, name string) (Product, error)
-	GetProductByQuery(ctx context.Context, name string) ([]Product, error)
+	GetProduct(ctx context.Context) ([]GetProductRow, error)
+	GetProductById(ctx context.Context, id uuid.UUID) (GetProductByIdRow, error)
+	GetProductByName(ctx context.Context, name string) (GetProductByNameRow, error)
+	GetProductByQuery(ctx context.Context, name string) ([]GetProductByQueryRow, error)
 	GetUser(ctx context.Context) ([]GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
 	UpdateOrder(ctx context.Context, arg UpdateOrderParams) (sql.Result, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (sql.Result, error)
 	UpdateProduct(ctx context.Context, arg UpdateProductParams) (sql.Result, error)
+	UpdateProductPrice(ctx context.Context, arg UpdateProductPriceParams) (sql.Result, error)
 	UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) (sql.Result, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (sql.Result, error)
 }
