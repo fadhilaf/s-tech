@@ -21,14 +21,15 @@ func (usecase *viewUsecaseImpl) GetOrderByUserId(req model.GetOrderByUserIdReque
 	orders := make([]model.Order, len(ordersDb))
 
 	for i, order := range ordersDb {
-		product, err := usecase.Store.GetProductById(context.Background(), order.ProductID)
+		product, err := usecase.Store.GetProductByPriceId(context.Background(), order.ProductPriceID)
 		if err != nil {
 			return utils.ToWebServiceResponse("Product tidak ditemukan di database", http.StatusNotFound, nil)
 		}
 
 		orders[i] = model.Order{
-			ID:          order.ID,
-			ProductID:   product.ID,
+			ID:             order.ID,
+			ProductPriceID: order.ProductPriceID,
+			ProductID:      product.ID,
 			ProductName: product.Name,
 			IsService:   product.IsService,
 			Quantity:    order.Quantity,

@@ -21,6 +21,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -40,6 +41,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -60,6 +62,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -80,6 +83,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -115,3 +119,18 @@ WHERE id = $1;
 -- name: DeleteProduct :exec
 DELETE FROM products
 WHERE id = $1;
+
+-- name: GetProductByPriceId :one
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.id AS product_price_id,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE pp.id = $1
+LIMIT 1;

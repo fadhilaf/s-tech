@@ -21,7 +21,7 @@ func (usecase *viewUsecaseImpl) GetProductById(req model.GetProductByIdRequest) 
 	product := model.Product{
 		ID:          productDb.ID,
 		Name:        productDb.Name,
-		Price:       utils.AddCommas(int(productDb.Price)),
+		CurrentPrice: productDb.CurrentPrice,
 		IsService:   productDb.IsService,
 		Image:       productDb.Image,
 		Description: productDb.Description,

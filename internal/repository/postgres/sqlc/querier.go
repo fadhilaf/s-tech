@@ -15,6 +15,7 @@ type Querier interface {
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (sql.Result, error)
 	CreateProduct(ctx context.Context, arg CreateProductParams) (uuid.UUID, error)
 	CreateProductPrice(ctx context.Context, arg CreateProductPriceParams) (sql.Result, error)
+	CreateSupplier(ctx context.Context, name string) (uuid.UUID, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error)
 	DeleteOrder(ctx context.Context, id uuid.UUID) error
 	DeleteProduct(ctx context.Context, id uuid.UUID) error
@@ -25,10 +26,15 @@ type Querier interface {
 	GetProduct(ctx context.Context) ([]GetProductRow, error)
 	GetProductById(ctx context.Context, id uuid.UUID) (GetProductByIdRow, error)
 	GetProductByName(ctx context.Context, name string) (GetProductByNameRow, error)
+	GetProductByPriceId(ctx context.Context, id uuid.UUID) (GetProductByPriceIdRow, error)
 	GetProductByQuery(ctx context.Context, name string) ([]GetProductByQueryRow, error)
+	GetProductStocksByProductId(ctx context.Context, productID uuid.UUID) ([]ProductStock, error)
+	GetSupplierById(ctx context.Context, id uuid.UUID) (Supplier, error)
+	GetSuppliers(ctx context.Context) ([]Supplier, error)
 	GetUser(ctx context.Context) ([]GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
+	InsertProductStock(ctx context.Context, arg InsertProductStockParams) (sql.Result, error)
 	UpdateOrder(ctx context.Context, arg UpdateOrderParams) (sql.Result, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (sql.Result, error)
 	UpdateProduct(ctx context.Context, arg UpdateProductParams) (sql.Result, error)

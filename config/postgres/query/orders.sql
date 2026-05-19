@@ -1,6 +1,6 @@
 -- name: CreateOrder :execresult
 INSERT INTO orders (
-  user_id, product_id, quantity, description
+  user_id, product_price_id, quantity, description
 ) VALUES (
   $1, $2, $3, $4
 );

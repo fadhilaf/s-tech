@@ -8,6 +8,7 @@ import (
 	"github.com/fadhilaf/s-tech/internal/model"
 	repositoryModel "github.com/fadhilaf/s-tech/internal/repository/postgres/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	utils "github.com/fadhilaf/s-tech/internal/utils"
 )
@@ -23,22 +24,28 @@ func (usecase *orderUsecaseImpl) CreateOrder(req model.CreateOrderRequest) model
 	}
 
 	order, err := usecase.Store.CreateOrder(context.Background(), repositoryModel.CreateOrderParams{
-		UserID:      req.UserID,
-		ProductID:   req.ProductID,
-		Quantity:    req.Quantity,
-		Description: req.Description,
+		UserID:         req.UserID,
+		ProductPriceID: product.ProductPriceID,
+		Quantity:       req.Quantity,
+		Description:    req.Description,
 	})
 	if err != nil {
 		return utils.ToWebServiceResponse("Gagal memasukkan order ke database", http.StatusInternalServerError, nil)
 	}
 
-	updatedProduct, err := usecase.Store.UpdateProductStock(context.Background(), repositoryModel.UpdateProductStockParams{
-		ID:    req.ProductID,
-		Stock: product.Stock - req.Quantity,
+	_, err = usecase.Store.InsertProductStock(context.Background(), repositoryModel.InsertProductStockParams{
+		ProductID:  req.ProductID,
+		SupplierID: uuid.Nil,
+		IsAdd:      false,
+		Quantity:   req.Quantity,
+		Price:      0, // the cost price doesn't matter for removal
 	})
 	if err != nil {
-		return utils.ToWebServiceResponse("Gagal mengganti stok produk ke database", http.StatusInternalServerError, nil)
+		return utils.ToWebServiceResponse("Gagal memasukkan log stok produk ke database", http.StatusInternalServerError, nil)
 	}
+
+    // Refresh the product to get the updated stock
+	updatedProduct, _ := usecase.Store.GetProductById(context.Background(), req.ProductID)
 
 	return utils.ToWebServiceResponse("Berhasil memasukkan order ke database", http.StatusCreated, gin.H{
 		"order":   order,

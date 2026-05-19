@@ -11,13 +11,13 @@ import (
 )
 
 type Order struct {
-	ID          uuid.UUID
-	UserID      uuid.UUID
-	ProductID   uuid.UUID
-	Quantity    int32
-	Status      interface{}
-	Description string
-	CreatedAt   time.Time
+	ID             uuid.UUID
+	UserID         uuid.UUID
+	Quantity       int32
+	Status         interface{}
+	Description    string
+	CreatedAt      time.Time
+	ProductPriceID uuid.UUID
 }
 
 type Product struct {
@@ -36,6 +36,22 @@ type ProductPrice struct {
 	Price         int32
 	EffectiveDate time.Time
 	CreatedAt     time.Time
+}
+
+type ProductStock struct {
+	ID         uuid.UUID
+	ProductID  uuid.UUID
+	SupplierID uuid.UUID
+	IsAdd      bool
+	Quantity   int32
+	Price      int32
+	CreatedAt  time.Time
+}
+
+type Supplier struct {
+	ID        uuid.UUID
+	Name      string
+	CreatedAt time.Time
 }
 
 type User struct {

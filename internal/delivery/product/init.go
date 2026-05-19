@@ -7,6 +7,8 @@ import (
 
 type ProductDelivery interface {
 	CreateProduct(ctx *gin.Context)
+	CreateSupplier(ctx *gin.Context)
+	ReceiveProductStock(ctx *gin.Context)
 }
 
 var _ ProductDelivery = &productHandler{}

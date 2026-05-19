@@ -11,9 +11,10 @@ const (
 )
 
 type Order struct {
-	ID           uuid.UUID
-	ProductID    uuid.UUID
-	ProductName  string
+	ID             uuid.UUID
+	ProductPriceID uuid.UUID
+	ProductID      uuid.UUID
+	ProductName    string
 	IsService    bool
 	BuyerID      uuid.UUID
 	BuyerName    string

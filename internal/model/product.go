@@ -8,6 +8,7 @@ type Product struct {
 	ID          uuid.UUID `json:"id" db:"id"`
 	Name        string    `json:"name" db:"name"`
 	CurrentPrice int32    `json:"current_price" db:"current_price"`
+
 	Stock       int32     `json:"stock" db:"stock"`
 	IsService   bool      `json:"is_service" db:"is_service"`
 	Description string    `json:"description" db:"description"`

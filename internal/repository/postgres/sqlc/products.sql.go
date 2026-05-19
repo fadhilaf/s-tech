@@ -79,6 +79,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -92,13 +93,14 @@ ORDER BY p.created_at DESC
 `
 
 type GetProductRow struct {
-	ID           uuid.UUID
-	Name         string
-	Stock        int32
-	IsService    bool
-	Description  string
-	Image        string
-	CurrentPrice int32
+	ID             uuid.UUID
+	Name           string
+	Stock          int32
+	IsService      bool
+	Description    string
+	Image          string
+	ProductPriceID uuid.UUID
+	CurrentPrice   int32
 }
 
 func (q *Queries) GetProduct(ctx context.Context) ([]GetProductRow, error) {
@@ -117,6 +119,7 @@ func (q *Queries) GetProduct(ctx context.Context) ([]GetProductRow, error) {
 			&i.IsService,
 			&i.Description,
 			&i.Image,
+			&i.ProductPriceID,
 			&i.CurrentPrice,
 		); err != nil {
 			return nil, err
@@ -140,6 +143,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -154,13 +158,14 @@ LIMIT 1
 `
 
 type GetProductByIdRow struct {
-	ID           uuid.UUID
-	Name         string
-	Stock        int32
-	IsService    bool
-	Description  string
-	Image        string
-	CurrentPrice int32
+	ID             uuid.UUID
+	Name           string
+	Stock          int32
+	IsService      bool
+	Description    string
+	Image          string
+	ProductPriceID uuid.UUID
+	CurrentPrice   int32
 }
 
 func (q *Queries) GetProductById(ctx context.Context, id uuid.UUID) (GetProductByIdRow, error) {
@@ -173,6 +178,7 @@ func (q *Queries) GetProductById(ctx context.Context, id uuid.UUID) (GetProductB
 		&i.IsService,
 		&i.Description,
 		&i.Image,
+		&i.ProductPriceID,
 		&i.CurrentPrice,
 	)
 	return i, err
@@ -186,6 +192,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -200,13 +207,14 @@ LIMIT 1
 `
 
 type GetProductByNameRow struct {
-	ID           uuid.UUID
-	Name         string
-	Stock        int32
-	IsService    bool
-	Description  string
-	Image        string
-	CurrentPrice int32
+	ID             uuid.UUID
+	Name           string
+	Stock          int32
+	IsService      bool
+	Description    string
+	Image          string
+	ProductPriceID uuid.UUID
+	CurrentPrice   int32
 }
 
 func (q *Queries) GetProductByName(ctx context.Context, name string) (GetProductByNameRow, error) {
@@ -219,6 +227,50 @@ func (q *Queries) GetProductByName(ctx context.Context, name string) (GetProduct
 		&i.IsService,
 		&i.Description,
 		&i.Image,
+		&i.ProductPriceID,
+		&i.CurrentPrice,
+	)
+	return i, err
+}
+
+const getProductByPriceId = `-- name: GetProductByPriceId :one
+SELECT
+    p.id,
+    p.name,
+    p.stock,
+    p.is_service,
+    p.description,
+    p.image,
+    pp.id AS product_price_id,
+    pp.price AS current_price
+FROM products p
+JOIN product_prices pp ON p.id = pp.product_id
+WHERE pp.id = $1
+LIMIT 1
+`
+
+type GetProductByPriceIdRow struct {
+	ID             uuid.UUID
+	Name           string
+	Stock          int32
+	IsService      bool
+	Description    string
+	Image          string
+	ProductPriceID uuid.UUID
+	CurrentPrice   int32
+}
+
+func (q *Queries) GetProductByPriceId(ctx context.Context, id uuid.UUID) (GetProductByPriceIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getProductByPriceId, id)
+	var i GetProductByPriceIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Stock,
+		&i.IsService,
+		&i.Description,
+		&i.Image,
+		&i.ProductPriceID,
 		&i.CurrentPrice,
 	)
 	return i, err
@@ -232,6 +284,7 @@ SELECT
     p.is_service,
     p.description,
     p.image,
+    pp.id AS product_price_id,
     pp.price AS current_price
 FROM products p
 JOIN product_prices pp ON p.id = pp.product_id
@@ -246,13 +299,14 @@ ORDER BY p.name
 `
 
 type GetProductByQueryRow struct {
-	ID           uuid.UUID
-	Name         string
-	Stock        int32
-	IsService    bool
-	Description  string
-	Image        string
-	CurrentPrice int32
+	ID             uuid.UUID
+	Name           string
+	Stock          int32
+	IsService      bool
+	Description    string
+	Image          string
+	ProductPriceID uuid.UUID
+	CurrentPrice   int32
 }
 
 func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]GetProductByQueryRow, error) {
@@ -271,6 +325,7 @@ func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]GetProd
 			&i.IsService,
 			&i.Description,
 			&i.Image,
+			&i.ProductPriceID,
 			&i.CurrentPrice,
 		); err != nil {
 			return nil, err

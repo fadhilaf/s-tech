@@ -7,6 +7,8 @@ import (
 
 type ProductUsecase interface {
 	CreateProduct(req model.CreateProductRequest) model.WebServiceResponse
+	CreateSupplier(req model.CreateSupplierRequest) model.WebServiceResponse
+	ReceiveProductStock(req model.ReceiveProductStockRequest) model.WebServiceResponse
 }
 
 var _ ProductUsecase = &productUsecaseImpl{}
