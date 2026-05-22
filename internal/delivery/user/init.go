@@ -8,6 +8,7 @@ import (
 type UserDelivery interface {
 	CreateUser(ctx *gin.Context)
 	// DeleteUser(ctx *gin.Context)
+	GetProfile(ctx *gin.Context)
 	// ListUser(ctx *gin.Context)
 	// UpdateUser(ctx *gin.Context)
 }

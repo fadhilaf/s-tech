@@ -9,6 +9,9 @@ type ProductUsecase interface {
 	CreateProduct(req model.CreateProductRequest) model.WebServiceResponse
 	CreateSupplier(req model.CreateSupplierRequest) model.WebServiceResponse
 	ReceiveProductStock(req model.ReceiveProductStockRequest) model.WebServiceResponse
+	GetProducts(keyword string) model.WebServiceResponse
+	GetProductById(id string) model.WebServiceResponse
+	GetSuppliers() model.WebServiceResponse
 }
 
 var _ ProductUsecase = &productUsecaseImpl{}

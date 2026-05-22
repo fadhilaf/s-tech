@@ -8,6 +8,7 @@ import (
 type UserUsecase interface {
 	CreateUser(model.CreateUserRequest) model.WebServiceResponse
 	// DeleteUser(model.DeleteUserRequest) model.WebServiceResponse
+	GetProfile(userId string) model.WebServiceResponse
 	// ListUser() model.WebServiceResponse
 	// UpdateUser(model.UpdateUserRequest) model.WebServiceResponse
 }

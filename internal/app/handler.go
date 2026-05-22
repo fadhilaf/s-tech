@@ -8,8 +8,6 @@ import (
 func (app *App) viewHandler(router *gin.RouterGroup) {
 	viewGroup := router.Group("/")
 	route.ViewRoutes(viewGroup, app.delivery.view)
-
-	// viewGroup := router.Group("/", middleware1, middleware2) //biso ditaro disampingny middlewareny
 }
 
 func (app *App) apiHandler(router *gin.RouterGroup) {
