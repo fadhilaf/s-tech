@@ -10,5 +10,5 @@ type WebServiceResponse struct {
 
 type ValidationErrorWebServiceResponse struct {
 	WebServiceResponse
-	DetailErrors []string `json:"errors"`
+	DetailErrors map[string]string `json:"errors"`
 }

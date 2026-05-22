@@ -19,12 +19,6 @@ func (usecase *authUsecaseImpl) UserLogin(req model.LoginRequest) model.WebServi
 		return utils.ToWebServiceResponse("Password salah", http.StatusUnauthorized, nil)
 	}
 
-	//gaya REST API
-	// return utils.ToWebServiceResponse("Login berhasil", http.StatusOK, gin.H{
-	// 	"user": user,
-	// })
-
-	//gaya MVC
 	modelUser := model.User{ID: user.ID, Name: user.Name, Email: user.Email, Address: user.Address, Phone: user.Phone}
 	return utils.ToWebServiceResponse("Login berhasil", http.StatusOK, gin.H{
 		"user": modelUser,

@@ -23,25 +23,32 @@ func debugFieldError(v validator.FieldError) {
 
 func HandleValidationErrors(errs validator.ValidationErrors) (res model.ValidationErrorWebServiceResponse) {
 	res.Status = http.StatusUnprocessableEntity
-	var finalErrors []string
+	finalErrors := make(map[string]string)
+
+	errorMessage := "Terjadi kesalahan pada validasi pada field:"
+
 	for _, v := range errs {
-		// debugFieldError(v)
 		translateFunction, ok := customErrors[v.Tag()]
 		if ok {
 			translatedFieldName, found := customMessages[v.Field()]
 			if !found {
 				translatedFieldName = v.Field()
 			}
-			finalErrors = append(
-				finalErrors,
-				translateFunction(v, translatedFieldName),
-			)
+
+			// Lowercase the field name for the JSON key convention
+			fieldKey := v.Field()
+			if len(fieldKey) > 0 {
+				fieldKey = string(fieldKey[0]|32) + fieldKey[1:] // simple uncapitalize
+			}
+
+			msg := translateFunction(v, translatedFieldName)
+			finalErrors[fieldKey] = msg
 		}
-	}
-	if len(finalErrors) > 0 {
-		res.Message = finalErrors[0]
+
+		errorMessage += " " + v.Field()
 	}
 
+	res.Message = errorMessage
 	res.DetailErrors = finalErrors
 	res.Data = nil
 	return res

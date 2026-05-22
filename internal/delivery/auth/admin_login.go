@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/fadhilaf/s-tech/internal/utils"
 
@@ -19,19 +18,10 @@ func (handler *authHandler) AdminLogin(ctx *gin.Context) {
 	}
 
 	res := handler.usecase.AdminLogin(req)
-	// Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	// Gaya HTML
-	utils.SaveResponse(ctx, res.Message)
-
-	var location url.URL
-	location = url.URL{Path: "/admin"}
 
 	if res.Status == http.StatusOK {
 		utils.SaveAdminToSession(ctx, true)
-		location = url.URL{Path: "/admin/dashboard"}
 	}
 
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+	ctx.JSON(res.Status, res)
 }

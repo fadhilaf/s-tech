@@ -31,4 +31,8 @@ func registerCustomErrors() {
 	customErrors["numeric"] = func(field validator.FieldError, translatedFieldName string) string {
 		return fmt.Sprintf("%s harus numeric", translatedFieldName)
 	}
+
+	customErrors["email"] = func(field validator.FieldError, translatedFieldName string) string {
+		return fmt.Sprintf("%s harus berupa format email yang valid", translatedFieldName)
+	}
 }

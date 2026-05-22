@@ -37,7 +37,6 @@ type App struct {
 //go:embed templates/*.gohtml
 var templateFiles embed.FS
 
-
 //go:embed assets/*
 var assetFiles embed.FS
 
@@ -60,7 +59,7 @@ func (app *App) createHttpHandlers() *gin.Engine {
 	// Set a lower memory limit for multipart forms (default is 32 MiB)
 	// router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-  // Membaca file dari variabel embed, bukan dari harddisk
+	// Membaca file dari variabel embed, bukan dari harddisk
 	templ := template.Must(template.ParseFS(templateFiles, "templates/*.gohtml"))
 	router.SetHTMLTemplate(templ)
 	// router.LoadHTMLGlob(app.Config.AppStatic + "/template/*.gohtml")

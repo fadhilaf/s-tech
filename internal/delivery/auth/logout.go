@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/fadhilaf/s-tech/internal/utils"
 
@@ -14,12 +13,5 @@ func (handler *authHandler) Logout(ctx *gin.Context) {
 
 	res := utils.ToWebServiceResponse("Logout berhasil", http.StatusOK, nil)
 
-	//Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	//Gaya HTML
-	utils.SaveResponse(ctx, res.Message)
-
-	location := url.URL{Path: "/"}
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+	ctx.JSON(res.Status, res)
 }

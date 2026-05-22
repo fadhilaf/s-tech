@@ -1,9 +1,6 @@
 package delivery
 
 import (
-	"net/http"
-	"net/url"
-
 	"github.com/fadhilaf/s-tech/internal/utils"
 
 	"github.com/fadhilaf/s-tech/internal/model"
@@ -19,18 +16,5 @@ func (handler *userHandler) CreateUser(ctx *gin.Context) {
 	}
 	res := handler.usecase.CreateUser(req)
 
-	// Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	// Gaya MVC
-	utils.SaveResponse(ctx, res.Message)
-
-	var location url.URL
-	location = url.URL{Path: "/register"}
-
-	if res.Status == http.StatusCreated {
-		location = url.URL{Path: "/login"}
-	}
-
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+	ctx.JSON(res.Status, res)
 }

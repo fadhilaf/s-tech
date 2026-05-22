@@ -18,7 +18,7 @@ func ToWebServiceResponse(message string, status int, data gin.H) model.WebServi
 
 // MVC
 func SaveResponse(c *gin.Context, message string) {
-	c.SetCookie("response", message, 60, "/", "localhost", false, true)
+	c.SetCookie("response", message, 60, "/", "localhost", false, false)
 }
 
 func GetResponse(c *gin.Context) string {

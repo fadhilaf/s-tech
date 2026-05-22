@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/fadhilaf/s-tech/internal/utils"
 
@@ -20,23 +19,13 @@ func (handler *authHandler) UserLogin(ctx *gin.Context) {
 
 	res := handler.usecase.UserLogin(req)
 
-	// Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	// Gaya HTML
-	utils.SaveResponse(ctx, res.Message)
-
-	var location url.URL
-	location = url.URL{Path: "/login"}
-
 	if res.Status == http.StatusOK {
 		//casting dari [interface{}]interface{} ke model.User
 		user, ok := res.Data["user"].(model.User)
 		if ok {
 			utils.SaveUserToSession(ctx, user.ID)
-			location = url.URL{Path: "/"}
 		}
 	}
 
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+	ctx.JSON(res.Status, res)
 }
