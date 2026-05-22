@@ -19,12 +19,19 @@ func (handler *authHandler) UserLogin(ctx *gin.Context) {
 
 	res := handler.usecase.UserLogin(req)
 
+	if res.Status == http.StatusNotFound || res.Status == http.StatusUnauthorized {
+		if errors, ok := res.Data["errors"].(map[string]string); ok {
+			ctx.JSON(res.Status, utils.ToDetailedErrorWebServiceResponse(res.Message, res.Status, errors))
+			return
+		}
+	}
+
 	if res.Status == http.StatusOK {
 		//casting dari [interface{}]interface{} ke model.User
-		user, ok := res.Data["user"].(model.User)
-		if ok {
+		if user, ok := res.Data["user"].(model.User); ok {
 			utils.SaveUserToSession(ctx, user.ID)
 		}
+
 	}
 
 	ctx.JSON(res.Status, res)

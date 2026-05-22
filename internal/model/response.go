@@ -8,7 +8,7 @@ type WebServiceResponse struct {
 	Data    gin.H  `json:"data"`
 }
 
-type ValidationErrorWebServiceResponse struct {
+type DetailedErrorWebServiceResponse struct {
 	WebServiceResponse
 	DetailErrors map[string]string `json:"errors"`
 }

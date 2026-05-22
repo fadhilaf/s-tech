@@ -16,6 +16,17 @@ func ToWebServiceResponse(message string, status int, data gin.H) model.WebServi
 	}
 }
 
+func ToDetailedErrorWebServiceResponse(message string, status int, errors map[string]string) model.DetailedErrorWebServiceResponse {
+	return model.DetailedErrorWebServiceResponse{
+		WebServiceResponse: model.WebServiceResponse{
+			Message: message,
+			Status:  status,
+			Data:    nil,
+		},
+		DetailErrors: errors,
+	}
+}
+
 // MVC
 func SaveResponse(c *gin.Context, message string) {
 	c.SetCookie("response", message, 60, "/", "localhost", false, false)

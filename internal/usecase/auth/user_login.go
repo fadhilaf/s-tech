@@ -12,11 +12,15 @@ import (
 func (usecase *authUsecaseImpl) UserLogin(req model.LoginRequest) model.WebServiceResponse {
 	user, err := usecase.Store.GetUserByEmail(context.Background(), req.Email)
 	if err != nil {
-		return utils.ToWebServiceResponse("Email belum terdaftar", http.StatusNotFound, nil)
+		return utils.ToWebServiceResponse("Email belum terdaftar", http.StatusNotFound, gin.H{
+			"errors": map[string]string{"email": "Email belum terdaftar"},
+		})
 	}
 
 	if err := utils.ComparePassword(req.Password, user.PasswordHash); err != nil {
-		return utils.ToWebServiceResponse("Password salah", http.StatusUnauthorized, nil)
+		return utils.ToWebServiceResponse("Password salah", http.StatusUnauthorized, gin.H{
+			"errors": map[string]string{"password": "Password salah"},
+		})
 	}
 
 	modelUser := model.User{ID: user.ID, Name: user.Name, Email: user.Email, Address: user.Address, Phone: user.Phone}

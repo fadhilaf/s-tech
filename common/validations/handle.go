@@ -21,7 +21,7 @@ func debugFieldError(v validator.FieldError) {
 	fmt.Println("ini struct namespace", v.StructNamespace())
 }
 
-func HandleValidationErrors(errs validator.ValidationErrors) (res model.ValidationErrorWebServiceResponse) {
+func HandleValidationErrors(errs validator.ValidationErrors) (res model.DetailedErrorWebServiceResponse) {
 	res.Status = http.StatusUnprocessableEntity
 	finalErrors := make(map[string]string)
 
