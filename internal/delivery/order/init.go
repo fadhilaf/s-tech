@@ -10,7 +10,6 @@ type OrderDelivery interface {
 	DeliveredOrder(ctx *gin.Context)
 	ProcessingOrder(ctx *gin.Context)
 	GetOrders(ctx *gin.Context)
-	GetMyOrders(ctx *gin.Context)
 }
 
 var _ OrderDelivery = &orderHandler{}

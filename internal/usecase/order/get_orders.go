@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/fadhilaf/s-tech/internal/model"
 	"github.com/fadhilaf/s-tech/internal/utils"
+	"github.com/gin-gonic/gin"
 )
 
 func (usecase *orderUsecaseImpl) GetOrders() model.WebServiceResponse {
@@ -33,6 +33,7 @@ func (usecase *orderUsecaseImpl) GetOrders() model.WebServiceResponse {
 			ProductPriceID: order.ProductPriceID,
 			ProductID:      product.ID,
 			ProductName:    product.Name,
+			ProductPrice:   product.CurrentPrice,
 			IsService:      product.IsService,
 			BuyerID:        user.ID,
 			BuyerName:      user.Name,

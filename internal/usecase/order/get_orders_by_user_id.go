@@ -4,19 +4,14 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/fadhilaf/s-tech/internal/model"
 	"github.com/fadhilaf/s-tech/internal/utils"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
-func (usecase *orderUsecaseImpl) GetOrdersByUserId(userId string) model.WebServiceResponse {
-	parsedId, err := uuid.Parse(userId)
-	if err != nil {
-		return utils.ToWebServiceResponse("ID User tidak valid", http.StatusBadRequest, nil)
-	}
-
-	ordersDb, err := usecase.Store.GetOrdersByUserId(context.Background(), parsedId)
+func (usecase *orderUsecaseImpl) GetOrdersByUserId(userId uuid.UUID) model.WebServiceResponse {
+	ordersDb, err := usecase.Store.GetOrdersByUserId(context.Background(), userId)
 	if err != nil {
 		return utils.ToWebServiceResponse("Orders tidak ditemukan", http.StatusNotFound, nil)
 	}
@@ -34,6 +29,7 @@ func (usecase *orderUsecaseImpl) GetOrdersByUserId(userId string) model.WebServi
 			ProductPriceID: order.ProductPriceID,
 			ProductID:      product.ID,
 			ProductName:    product.Name,
+			ProductPrice:   product.CurrentPrice,
 			IsService:      product.IsService,
 			Quantity:       order.Quantity,
 			Status:         string(order.Status.([]uint8)),

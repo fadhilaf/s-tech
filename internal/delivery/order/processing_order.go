@@ -35,6 +35,6 @@ func (handler *orderHandler) ProcessingOrder(ctx *gin.Context) {
 	// ctx.JSON(res.Status, res)
 
 	// Gaya MVC
-	location := url.URL{Path: "/admin/pesanan"}
+	location := url.URL{Path: "/admin/order"}
 	ctx.Redirect(http.StatusFound, location.RequestURI())
 }

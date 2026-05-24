@@ -5,7 +5,7 @@ INSERT INTO users (
   $1, $2, $3, $4, $5
 );
 
--- name: GetUser :many
+-- name: GetUsers :many
 SELECT id, name, email FROM users
 ORDER BY name;
 

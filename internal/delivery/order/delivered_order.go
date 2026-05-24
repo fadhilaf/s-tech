@@ -43,6 +43,6 @@ func (handler *orderHandler) DeliveredOrder(ctx *gin.Context) {
 
 	// Gaya MVC
 
-	location := url.URL{Path: "/pesanan"}
+	location := url.URL{Path: "/order"}
 	ctx.Redirect(http.StatusFound, location.RequestURI())
 }

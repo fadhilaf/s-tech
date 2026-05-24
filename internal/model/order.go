@@ -11,18 +11,19 @@ const (
 )
 
 type Order struct {
-	ID             uuid.UUID
-	ProductPriceID uuid.UUID
-	ProductID      uuid.UUID
-	ProductName    string
-	IsService    bool
-	BuyerID      uuid.UUID
-	BuyerName    string
-	BuyerAddress string
-	BuyerPhone   string
-	Quantity     int32
-	Status       string
-	Description  string
+	ID             uuid.UUID `json:"id"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	ProductID      uuid.UUID `json:"product_id"`
+	ProductName    string    `json:"product_name"`
+	ProductPrice   int32     `json:"product_price"`
+	IsService      bool      `json:"is_service"`
+	BuyerID        uuid.UUID `json:"buyer_id"`
+	BuyerName      string    `json:"buyer_name"`
+	BuyerAddress   string    `json:"buyer_address"`
+	BuyerPhone     string    `json:"buyer_phone"`
+	Quantity       int32     `json:"quantity"`
+	Status         string    `json:"status"`
+	Description    string    `json:"description"`
 }
 
 type CreateOrderFormRequest struct {

@@ -45,10 +45,10 @@ func (handler *orderHandler) CreateOrder(ctx *gin.Context) {
 	// Gaya MVC
 
 	var location url.URL
-	location = url.URL{Path: "/pesan", RawQuery: "id=" + req.ProductID}
+	location = url.URL{Path: "/product", RawQuery: "id=" + req.ProductID}
 
 	if res.Status == http.StatusCreated {
-		location = url.URL{Path: "/pesanan"}
+		location = url.URL{Path: "/order"}
 	}
 
 	ctx.Redirect(http.StatusFound, location.RequestURI())

@@ -10,13 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func (usecase *userUsecaseImpl) GetProfile(userId string) model.WebServiceResponse {
-	parsedId, err := uuid.Parse(userId)
-	if err != nil {
-		return utils.ToWebServiceResponse("ID User tidak valid", http.StatusBadRequest, nil)
-	}
-
-	userDb, err := usecase.Store.GetUserById(context.Background(), parsedId)
+func (usecase *userUsecaseImpl) GetProfile(userId uuid.UUID) model.WebServiceResponse {
+	userDb, err := usecase.Store.GetUserById(context.Background(), userId)
 	if err != nil {
 		return utils.ToWebServiceResponse("User tidak ditemukan", http.StatusNotFound, nil)
 	}

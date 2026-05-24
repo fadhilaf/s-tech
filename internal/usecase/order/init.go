@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/fadhilaf/s-tech/internal/model"
 	"github.com/fadhilaf/s-tech/internal/repository"
+	"github.com/google/uuid"
 )
 
 type OrderUsecase interface {
@@ -10,7 +11,7 @@ type OrderUsecase interface {
 	ProcessingOrder(model.UpdateOrderStatusProcessingRequest) model.WebServiceResponse
 	DeliveredOrder(model.UpdateOrderStatusDeliveredRequest) model.WebServiceResponse
 	GetOrders() model.WebServiceResponse
-	GetOrdersByUserId(userId string) model.WebServiceResponse
+	GetOrdersByUserId(userId uuid.UUID) model.WebServiceResponse
 }
 
 var _ OrderUsecase = &orderUsecaseImpl{}

@@ -20,6 +20,7 @@ func SaveUserToSession(c *gin.Context, id uuid.UUID) {
 		Path:     "/",
 		HttpOnly: true,
 		MaxAge:   24 * 3600,
+		// MaxAge: 60, // for testing
 	})
 
 	err := session.Save()

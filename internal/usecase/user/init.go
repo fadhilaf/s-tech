@@ -3,12 +3,13 @@ package usecase
 import (
 	"github.com/fadhilaf/s-tech/internal/model"
 	"github.com/fadhilaf/s-tech/internal/repository"
+	"github.com/google/uuid"
 )
 
 type UserUsecase interface {
 	CreateUser(model.CreateUserRequest) model.WebServiceResponse
 	// DeleteUser(model.DeleteUserRequest) model.WebServiceResponse
-	GetProfile(userId string) model.WebServiceResponse
+	GetProfile(userId uuid.UUID) model.WebServiceResponse
 	// ListUser() model.WebServiceResponse
 	// UpdateUser(model.UpdateUserRequest) model.WebServiceResponse
 }
