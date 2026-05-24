@@ -8,8 +8,9 @@ import (
 )
 
 func OrderRoutes(router *gin.RouterGroup, handler delivery.OrderDelivery) {
+	router.GET("/", middleware.ShouldAuth(), handler.GetOrders)
+
 	userRoutes := router.Group("/", middleware.ShouldUser())
-	userRoutes.GET("/", handler.GetOrders)
 	userRoutes.POST("/", handler.CreateOrder)
 	userRoutes.POST("/delivered", handler.DeliveredOrder)
 

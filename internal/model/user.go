@@ -10,6 +10,7 @@ type User struct {
 	Email   string    `json:"email" db:"email"`
 	Address string    `json:"address" db:"address"`
 	Phone   string    `json:"phone" db:"phone"`
+	IsAdmin bool      `json:"is_admin" db:"-"`
 }
 
 type CreateUserRequest struct {

@@ -9,6 +9,7 @@ type AuthDelivery interface {
 	UserLogin(ctx *gin.Context)
 	AdminLogin(ctx *gin.Context)
 	Logout(ctx *gin.Context)
+	GetProfile(ctx *gin.Context)
 }
 
 var _ AuthDelivery = &authHandler{}

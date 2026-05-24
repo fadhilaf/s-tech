@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/fadhilaf/s-tech/internal/utils"
 	"github.com/google/uuid"
@@ -29,12 +28,9 @@ func (handler *orderHandler) ProcessingOrder(ctx *gin.Context) {
 		ID: orderId,
 	}
 	res := handler.usecase.ProcessingOrder(req)
-	utils.SaveResponse(ctx, res.Message)
+	if res.Status == http.StatusOK {
+		ctx.Header("HX-Refresh", "true")
+	}
 
-	// Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	// Gaya MVC
-	location := url.URL{Path: "/admin/order"}
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+	ctx.JSON(res.Status, res)
 }

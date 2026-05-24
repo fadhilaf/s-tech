@@ -3,11 +3,13 @@ package usecase
 import (
 	"github.com/fadhilaf/s-tech/internal/model"
 	"github.com/fadhilaf/s-tech/internal/repository"
+	"github.com/google/uuid"
 )
 
 type AuthUsecase interface {
 	UserLogin(model.LoginRequest) model.WebServiceResponse
 	AdminLogin(model.LoginRequest) model.WebServiceResponse
+	GetProfile(userId uuid.UUID, isAdmin bool) model.WebServiceResponse
 }
 
 var _ AuthUsecase = &authUsecaseImpl{}

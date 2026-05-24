@@ -31,7 +31,7 @@ func (handler *authHandler) UserLogin(ctx *gin.Context) {
 		if user, ok := res.Data["user"].(model.User); ok {
 			utils.SaveUserToSession(ctx, user.ID)
 		}
-
+		ctx.Header("HX-Redirect", "/")
 	}
 
 	ctx.JSON(res.Status, res)

@@ -27,8 +27,7 @@ type Config struct {
 	AdminEmail string `mapstructure:"ADMIN_EMAIL"`
 	AdminPassword string `mapstructure:"ADMIN_PASSWORD"`
 
-	// untuk cors siapo be yg boleh boleh akses (utk sekarang dak dipake) [cek be ck mano agek caro setting origin di gin gin-contrib/cors]
-	AllowedOrigin string `mapstructure:"ORIGIN"`
+	AllowedOrigins []string `mapstructure:"ALLOWED_ORIGINS"`
 }
 
 func LoadConfig(envPath string) Config {
@@ -55,6 +54,7 @@ func LoadConfig(envPath string) Config {
 	viper.SetDefault("ADMIN_PHONE", "08121234567890")
 	viper.SetDefault("ADMIN_EMAIL", "fa@fa.fa")
 	viper.SetDefault("ADMIN_PASSWORD", "123456")
+	viper.SetDefault("ALLOWED_ORIGINS", []string{"http://localhost:4321", "http://127.0.0.1:4321"})
 
 	viper.Unmarshal(&config)
 

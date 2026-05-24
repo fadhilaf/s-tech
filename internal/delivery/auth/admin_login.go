@@ -21,6 +21,7 @@ func (handler *authHandler) AdminLogin(ctx *gin.Context) {
 
 	if res.Status == http.StatusOK {
 		utils.SaveAdminToSession(ctx, true)
+		ctx.Header("HX-Redirect", "/admin/dashboard")
 	}
 
 	ctx.JSON(res.Status, res)

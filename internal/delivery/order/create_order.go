@@ -2,7 +2,6 @@ package delivery
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/fadhilaf/s-tech/internal/utils"
 	"github.com/google/uuid"
@@ -37,19 +36,9 @@ func (handler *orderHandler) CreateOrder(ctx *gin.Context) {
 		Quantity:    req.Quantity,
 		Description: req.Description,
 	})
-	utils.SaveResponse(ctx, res.Message)
-
-	// Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	// Gaya MVC
-
-	var location url.URL
-	location = url.URL{Path: "/product", RawQuery: "id=" + req.ProductID}
-
-	if res.Status == http.StatusCreated {
-		location = url.URL{Path: "/order"}
+	if res.Status == http.StatusCreated || res.Status == http.StatusOK {
+		ctx.Header("HX-Redirect", "/order")
 	}
 
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+	ctx.JSON(res.Status, res)
 }

@@ -44,9 +44,11 @@ func (app *App) createHttpHandlers() *gin.Engine {
 	router := gin.Default()
 
 	corsCfg := cors.DefaultConfig()
-	corsCfg.AllowHeaders = append(corsCfg.AllowHeaders, "Accept")
+	corsCfg.AllowHeaders = append(corsCfg.AllowHeaders, "Accept", "HX-Request", "HX-Target", "HX-Current-URL", "HX-Trigger")
+	corsCfg.ExposeHeaders = append(corsCfg.ExposeHeaders, "HX-Redirect", "HX-Refresh", "HX-Trigger", "HX-Trigger-After-Swap", "HX-Trigger-After-Settle")
 
-	corsCfg.AllowAllOrigins = true
+	corsCfg.AllowOrigins = app.Config.AllowedOrigins
+	corsCfg.AllowCredentials = true
 
 	router.Use(cors.New(corsCfg))
 

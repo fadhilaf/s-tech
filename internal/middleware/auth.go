@@ -40,3 +40,15 @@ func ShouldAdmin() gin.HandlerFunc {
 		}
 	}
 }
+
+func ShouldAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userId := utils.GetUserIdFromContext(c)
+		isAdmin := utils.GetAdminFromContext(c)
+
+		if userId == uuid.Nil && !isAdmin {
+			c.AbortWithStatusJSON(401, gin.H{"error": "Sesi tidak valid atau telah berakhir"})
+			return
+		}
+	}
+}
