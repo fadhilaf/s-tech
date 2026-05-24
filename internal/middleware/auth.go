@@ -23,8 +23,8 @@ func ShouldUser() gin.HandlerFunc {
 		userId := utils.GetUserIdFromContext(c)
 
 		if userId == uuid.Nil {
-			c.HTML(401, "401.gohtml", gin.H{})
-			c.Abort()
+			c.Header("HX-Redirect", "/401")
+			c.AbortWithStatusJSON(401, gin.H{"error": "Sesi tidak valid atau telah berakhir"})
 			return
 		}
 	}
@@ -35,6 +35,7 @@ func ShouldAdmin() gin.HandlerFunc {
 		isAdmin := utils.GetAdminFromContext(c)
 
 		if !isAdmin {
+			c.Header("HX-Redirect", "/401")
 			c.AbortWithStatusJSON(401, gin.H{"error": "Kamu harus admin untuk mengakses halaman ini"})
 			return
 		}
@@ -47,6 +48,7 @@ func ShouldAuth() gin.HandlerFunc {
 		isAdmin := utils.GetAdminFromContext(c)
 
 		if userId == uuid.Nil && !isAdmin {
+			c.Header("HX-Redirect", "/login")
 			c.AbortWithStatusJSON(401, gin.H{"error": "Sesi tidak valid atau telah berakhir"})
 			return
 		}
