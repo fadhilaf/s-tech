@@ -13,11 +13,11 @@ import (
 type Order struct {
 	ID             uuid.UUID
 	UserID         uuid.UUID
+	ProductPriceID uuid.UUID
 	Quantity       int32
 	Status         interface{}
 	Description    string
 	CreatedAt      time.Time
-	ProductPriceID uuid.UUID
 }
 
 type Product struct {

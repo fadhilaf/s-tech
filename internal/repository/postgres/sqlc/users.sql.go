@@ -48,40 +48,6 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getUser = `-- name: GetUser :many
-SELECT id, name, email FROM users
-ORDER BY name
-`
-
-type GetUserRow struct {
-	ID    uuid.UUID
-	Name  string
-	Email string
-}
-
-func (q *Queries) GetUser(ctx context.Context) ([]GetUserRow, error) {
-	rows, err := q.db.QueryContext(ctx, getUser)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetUserRow
-	for rows.Next() {
-		var i GetUserRow
-		if err := rows.Scan(&i.ID, &i.Name, &i.Email); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, name, email, password_hash, address, phone, created_at FROM users
 where email = $1 LIMIT 1
@@ -120,6 +86,40 @@ func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getUsers = `-- name: GetUsers :many
+SELECT id, name, email FROM users
+ORDER BY name
+`
+
+type GetUsersRow struct {
+	ID    uuid.UUID
+	Name  string
+	Email string
+}
+
+func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetUsersRow
+	for rows.Next() {
+		var i GetUsersRow
+		if err := rows.Scan(&i.ID, &i.Name, &i.Email); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateUser = `-- name: UpdateUser :execresult

@@ -47,7 +47,7 @@ func (q *Queries) DeleteOrder(ctx context.Context, id uuid.UUID) error {
 }
 
 const getOrderById = `-- name: GetOrderById :one
-SELECT id, user_id, quantity, status, description, created_at, product_price_id FROM orders
+SELECT id, user_id, product_price_id, quantity, status, description, created_at FROM orders
 WHERE id = $1 LIMIT 1
 `
 
@@ -57,17 +57,17 @@ func (q *Queries) GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
+		&i.ProductPriceID,
 		&i.Quantity,
 		&i.Status,
 		&i.Description,
 		&i.CreatedAt,
-		&i.ProductPriceID,
 	)
 	return i, err
 }
 
 const getOrders = `-- name: GetOrders :many
-SELECT id, user_id, quantity, status, description, created_at, product_price_id FROM orders 
+SELECT id, user_id, product_price_id, quantity, status, description, created_at FROM orders 
 ORDER BY created_at DESC
 `
 
@@ -83,11 +83,11 @@ func (q *Queries) GetOrders(ctx context.Context) ([]Order, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.ProductPriceID,
 			&i.Quantity,
 			&i.Status,
 			&i.Description,
 			&i.CreatedAt,
-			&i.ProductPriceID,
 		); err != nil {
 			return nil, err
 		}
@@ -103,7 +103,7 @@ func (q *Queries) GetOrders(ctx context.Context) ([]Order, error) {
 }
 
 const getOrdersByUserId = `-- name: GetOrdersByUserId :many
-SELECT id, user_id, quantity, status, description, created_at, product_price_id FROM orders
+SELECT id, user_id, product_price_id, quantity, status, description, created_at FROM orders
 WHERE user_id = $1
 ORDER BY created_at DESC
 `
@@ -120,11 +120,11 @@ func (q *Queries) GetOrdersByUserId(ctx context.Context, userID uuid.UUID) ([]Or
 		if err := rows.Scan(
 			&i.ID,
 			&i.UserID,
+			&i.ProductPriceID,
 			&i.Quantity,
 			&i.Status,
 			&i.Description,
 			&i.CreatedAt,
-			&i.ProductPriceID,
 		); err != nil {
 			return nil, err
 		}

@@ -19,6 +19,7 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error)
 	DeleteOrder(ctx context.Context, id uuid.UUID) error
 	DeleteProduct(ctx context.Context, id uuid.UUID) error
+	DeleteSupplier(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
 	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrders(ctx context.Context) ([]Order, error)
@@ -31,9 +32,9 @@ type Querier interface {
 	GetProductStocksByProductId(ctx context.Context, productID uuid.UUID) ([]ProductStock, error)
 	GetSupplierById(ctx context.Context, id uuid.UUID) (Supplier, error)
 	GetSuppliers(ctx context.Context) ([]Supplier, error)
-	GetUser(ctx context.Context) ([]GetUserRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id uuid.UUID) (User, error)
+	GetUsers(ctx context.Context) ([]GetUsersRow, error)
 	InsertProductStock(ctx context.Context, arg InsertProductStockParams) (sql.Result, error)
 	UpdateOrder(ctx context.Context, arg UpdateOrderParams) (sql.Result, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (sql.Result, error)

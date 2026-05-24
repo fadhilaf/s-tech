@@ -14,17 +14,26 @@ type Product struct {
 	Image        string    `json:"image" db:"image_url"`
 }
 
-type CreateProductNoFileRequest struct {
+type CreateProductNoFileFormRequest struct {
 	Name        string `form:"name" binding:"required"`
 	Price       int32  `form:"price" binding:"required"`
 	Stock       int32  `form:"stock" binding:"required"`
+	SupplierID  string `form:"supplier_id" binding:"required"`
 	IsService   bool   `form:"is_service" default:"false"`
 	Description string `form:"description" binding:"required"`
 }
+type ProductNoFile struct {
+	Name        string    `json:"name" binding:"required"`
+	Price       int32     `json:"price" binding:"required"`
+	Stock       int32     `json:"stock" binding:"required"`
+	SupplierID  uuid.UUID `json:"supplier_id" binding:"required"`
+	IsService   bool      `json:"is_service" default:"false"`
+	Description string    `json:"description" binding:"required"`
+}
 
 type CreateProductRequest struct {
-	NotFile CreateProductNoFileRequest
-	Image   string
+	ProductNoFile ProductNoFile
+	Image         string
 }
 
 type GetProductByIdRequest struct {

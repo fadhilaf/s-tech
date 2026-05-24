@@ -22,6 +22,15 @@ func (q *Queries) CreateSupplier(ctx context.Context, name string) (uuid.UUID, e
 	return id, err
 }
 
+const deleteSupplier = `-- name: DeleteSupplier :exec
+DELETE FROM suppliers WHERE id = $1
+`
+
+func (q *Queries) DeleteSupplier(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteSupplier, id)
+	return err
+}
+
 const getSupplierById = `-- name: GetSupplierById :one
 SELECT id, name, created_at FROM suppliers WHERE id = $1 LIMIT 1
 `

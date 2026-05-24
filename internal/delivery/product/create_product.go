@@ -2,47 +2,58 @@ package delivery
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/fadhilaf/s-tech/internal/utils"
 
 	"github.com/fadhilaf/s-tech/internal/model"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func (handler *productHandler) CreateProduct(ctx *gin.Context) {
-	var req model.CreateProductNoFileRequest
+	var req model.CreateProductNoFileFormRequest
 
 	ok := utils.BindFormAndValidate(ctx, &req)
 	if !ok {
 		return
 	}
 
+	supplierId, err := uuid.Parse(req.SupplierID)
+	if err != nil {
+		return
+	}
+
 	filename := ""
 	if !handler.IsStaticCloud {
 		// Simpan upload file ke folder assets/images
-		filename, ok = utils.SaveFileFromForm(ctx, "image", handler.AppStaticPath + "/img/")
+		filename, ok = utils.SaveFileFromForm(ctx, "image", handler.AppStaticPath+"/img/")
 		if !ok {
 			return
 		}
 	}
 
+	productNoFile := model.ProductNoFile{
+		Name:        req.Name,
+		Price:       req.Price,
+		Stock:       req.Stock,
+		SupplierID:  supplierId,
+		IsService:   req.IsService,
+		Description: req.Description,
+	}
+
 	res := handler.usecase.CreateProduct(model.CreateProductRequest{
-		NotFile: req,
-		Image:   filename,
+		ProductNoFile: productNoFile,
+		Image:         filename,
 	})
 
-	// Gaya REST API
-	// ctx.JSON(res.Status, res)
-
-	// Gaya MVC
-	utils.SaveResponse(ctx, res.Message)
-
-	var location url.URL
-	location = url.URL{Path: "/admin/tambah"}
+	var path string
+	path = "/admin/add-product"
 
 	if res.Status == http.StatusCreated {
-		location = url.URL{Path: "/admin/dashboard"}
+		path = "/admin/dashboard"
 	}
-	ctx.Redirect(http.StatusFound, location.RequestURI())
+
+	ctx.Header("HX-Redirect", path)
+
+	ctx.JSON(res.Status, res)
 }

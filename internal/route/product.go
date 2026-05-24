@@ -15,5 +15,6 @@ func ProductRoutes(router *gin.RouterGroup, handler delivery.ProductDelivery) {
 	adminGroup.GET("/supplier", handler.GetSuppliers)
 	adminGroup.POST("/", handler.CreateProduct)
 	adminGroup.POST("/supplier", handler.CreateSupplier)
+	adminGroup.DELETE("/supplier/:id", handler.DeleteSupplier)
 	adminGroup.POST("/receive_stock", handler.ReceiveProductStock)
 }
