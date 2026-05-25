@@ -23,11 +23,11 @@ RETURNING id
 `
 
 type CreateProductParams struct {
-	Name        string
-	Stock       int32
-	IsService   bool
-	Description string
-	Image       string
+	Name        string `json:"name"`
+	Stock       int32  `json:"stock"`
+	IsService   bool   `json:"is_service"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (uuid.UUID, error) {
@@ -52,9 +52,9 @@ INSERT INTO product_prices (
 `
 
 type CreateProductPriceParams struct {
-	ProductID     uuid.UUID
-	Price         int32
-	EffectiveDate time.Time
+	ProductID     uuid.UUID `json:"product_id"`
+	Price         int32     `json:"price"`
+	EffectiveDate time.Time `json:"effective_date"`
 }
 
 func (q *Queries) CreateProductPrice(ctx context.Context, arg CreateProductPriceParams) (sql.Result, error) {
@@ -69,6 +69,79 @@ WHERE id = $1
 func (q *Queries) DeleteProduct(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteProduct, id)
 	return err
+}
+
+const getAllChronology = `-- name: GetAllChronology :many
+SELECT
+  'STOCK_IN'::varchar AS log_type,
+  ps.created_at AS date,
+  ps.quantity AS quantity,
+  ps.price AS cost_price,
+  0::integer AS sell_price,
+  COALESCE(s.name, '') AS related_name,
+  p.name AS product_name
+FROM product_stocks ps
+LEFT JOIN suppliers s ON ps.supplier_id = s.id
+JOIN products p ON ps.product_id = p.id
+WHERE ps.is_add = true
+
+UNION ALL
+
+SELECT
+  'STOCK_OUT'::varchar AS log_type,
+  o.created_at AS date,
+  o.quantity AS quantity,
+  0::integer AS cost_price,
+  pp.price AS sell_price,
+  COALESCE(u.name, '') AS related_name,
+  p.name AS product_name
+FROM orders o
+JOIN product_prices pp ON o.product_price_id = pp.id
+JOIN users u ON o.user_id = u.id
+JOIN products p ON pp.product_id = p.id
+
+ORDER BY date DESC
+`
+
+type GetAllChronologyRow struct {
+	LogType     string    `json:"log_type"`
+	Date        time.Time `json:"date"`
+	Quantity    int32     `json:"quantity"`
+	CostPrice   int32     `json:"cost_price"`
+	SellPrice   int32     `json:"sell_price"`
+	RelatedName string    `json:"related_name"`
+	ProductName string    `json:"product_name"`
+}
+
+func (q *Queries) GetAllChronology(ctx context.Context) ([]GetAllChronologyRow, error) {
+	rows, err := q.db.QueryContext(ctx, getAllChronology)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllChronologyRow
+	for rows.Next() {
+		var i GetAllChronologyRow
+		if err := rows.Scan(
+			&i.LogType,
+			&i.Date,
+			&i.Quantity,
+			&i.CostPrice,
+			&i.SellPrice,
+			&i.RelatedName,
+			&i.ProductName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getProduct = `-- name: GetProduct :many
@@ -93,14 +166,14 @@ ORDER BY p.created_at DESC
 `
 
 type GetProductRow struct {
-	ID             uuid.UUID
-	Name           string
-	Stock          int32
-	IsService      bool
-	Description    string
-	Image          string
-	ProductPriceID uuid.UUID
-	CurrentPrice   int32
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Stock          int32     `json:"stock"`
+	IsService      bool      `json:"is_service"`
+	Description    string    `json:"description"`
+	Image          string    `json:"image"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	CurrentPrice   int32     `json:"current_price"`
 }
 
 func (q *Queries) GetProduct(ctx context.Context) ([]GetProductRow, error) {
@@ -158,14 +231,14 @@ LIMIT 1
 `
 
 type GetProductByIdRow struct {
-	ID             uuid.UUID
-	Name           string
-	Stock          int32
-	IsService      bool
-	Description    string
-	Image          string
-	ProductPriceID uuid.UUID
-	CurrentPrice   int32
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Stock          int32     `json:"stock"`
+	IsService      bool      `json:"is_service"`
+	Description    string    `json:"description"`
+	Image          string    `json:"image"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	CurrentPrice   int32     `json:"current_price"`
 }
 
 func (q *Queries) GetProductById(ctx context.Context, id uuid.UUID) (GetProductByIdRow, error) {
@@ -207,14 +280,14 @@ LIMIT 1
 `
 
 type GetProductByNameRow struct {
-	ID             uuid.UUID
-	Name           string
-	Stock          int32
-	IsService      bool
-	Description    string
-	Image          string
-	ProductPriceID uuid.UUID
-	CurrentPrice   int32
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Stock          int32     `json:"stock"`
+	IsService      bool      `json:"is_service"`
+	Description    string    `json:"description"`
+	Image          string    `json:"image"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	CurrentPrice   int32     `json:"current_price"`
 }
 
 func (q *Queries) GetProductByName(ctx context.Context, name string) (GetProductByNameRow, error) {
@@ -250,14 +323,14 @@ LIMIT 1
 `
 
 type GetProductByPriceIdRow struct {
-	ID             uuid.UUID
-	Name           string
-	Stock          int32
-	IsService      bool
-	Description    string
-	Image          string
-	ProductPriceID uuid.UUID
-	CurrentPrice   int32
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Stock          int32     `json:"stock"`
+	IsService      bool      `json:"is_service"`
+	Description    string    `json:"description"`
+	Image          string    `json:"image"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	CurrentPrice   int32     `json:"current_price"`
 }
 
 func (q *Queries) GetProductByPriceId(ctx context.Context, id uuid.UUID) (GetProductByPriceIdRow, error) {
@@ -299,14 +372,14 @@ ORDER BY p.name
 `
 
 type GetProductByQueryRow struct {
-	ID             uuid.UUID
-	Name           string
-	Stock          int32
-	IsService      bool
-	Description    string
-	Image          string
-	ProductPriceID uuid.UUID
-	CurrentPrice   int32
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Stock          int32     `json:"stock"`
+	IsService      bool      `json:"is_service"`
+	Description    string    `json:"description"`
+	Image          string    `json:"image"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	CurrentPrice   int32     `json:"current_price"`
 }
 
 func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]GetProductByQueryRow, error) {
@@ -341,6 +414,115 @@ func (q *Queries) GetProductByQuery(ctx context.Context, name string) ([]GetProd
 	return items, nil
 }
 
+const getProductChronology = `-- name: GetProductChronology :many
+SELECT
+  'STOCK_IN'::varchar AS log_type,
+  ps.created_at AS date,
+  ps.quantity AS quantity,
+  ps.price AS cost_price,
+  0::integer AS sell_price,
+  COALESCE(s.name, '') AS related_name
+FROM product_stocks ps
+LEFT JOIN suppliers s ON ps.supplier_id = s.id
+WHERE ps.product_id = $1 AND ps.is_add = true
+
+UNION ALL
+
+SELECT
+  'STOCK_OUT'::varchar AS log_type,
+  o.created_at AS date,
+  o.quantity AS quantity,
+  0::integer AS cost_price,
+  pp.price AS sell_price,
+  COALESCE(u.name, '') AS related_name
+FROM orders o
+JOIN product_prices pp ON o.product_price_id = pp.id
+JOIN users u ON o.user_id = u.id
+WHERE pp.product_id = $1
+
+ORDER BY date DESC
+`
+
+type GetProductChronologyRow struct {
+	LogType     string    `json:"log_type"`
+	Date        time.Time `json:"date"`
+	Quantity    int32     `json:"quantity"`
+	CostPrice   int32     `json:"cost_price"`
+	SellPrice   int32     `json:"sell_price"`
+	RelatedName string    `json:"related_name"`
+}
+
+func (q *Queries) GetProductChronology(ctx context.Context, productID uuid.UUID) ([]GetProductChronologyRow, error) {
+	rows, err := q.db.QueryContext(ctx, getProductChronology, productID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetProductChronologyRow
+	for rows.Next() {
+		var i GetProductChronologyRow
+		if err := rows.Scan(
+			&i.LogType,
+			&i.Date,
+			&i.Quantity,
+			&i.CostPrice,
+			&i.SellPrice,
+			&i.RelatedName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProductPricesByProductId = `-- name: GetProductPricesByProductId :many
+SELECT
+  id,
+  product_id,
+  price,
+  effective_date,
+  created_at
+FROM product_prices
+WHERE product_id = $1
+ORDER BY effective_date ASC
+`
+
+func (q *Queries) GetProductPricesByProductId(ctx context.Context, productID uuid.UUID) ([]ProductPrice, error) {
+	rows, err := q.db.QueryContext(ctx, getProductPricesByProductId, productID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ProductPrice
+	for rows.Next() {
+		var i ProductPrice
+		if err := rows.Scan(
+			&i.ID,
+			&i.ProductID,
+			&i.Price,
+			&i.EffectiveDate,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateProduct = `-- name: UpdateProduct :execresult
 UPDATE products SET
   name = $2,
@@ -351,11 +533,11 @@ WHERE id = $1
 `
 
 type UpdateProductParams struct {
-	ID          uuid.UUID
-	Name        string
-	Stock       int32
-	Description string
-	Image       string
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Stock       int32     `json:"stock"`
+	Description string    `json:"description"`
+	Image       string    `json:"image"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (sql.Result, error) {
@@ -363,6 +545,30 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (s
 		arg.ID,
 		arg.Name,
 		arg.Stock,
+		arg.Description,
+		arg.Image,
+	)
+}
+
+const updateProductDetails = `-- name: UpdateProductDetails :execresult
+UPDATE products SET
+  name = $2,
+  description = $3,
+  image = $4
+WHERE id = $1
+`
+
+type UpdateProductDetailsParams struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Image       string    `json:"image"`
+}
+
+func (q *Queries) UpdateProductDetails(ctx context.Context, arg UpdateProductDetailsParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateProductDetails,
+		arg.ID,
+		arg.Name,
 		arg.Description,
 		arg.Image,
 	)
@@ -377,8 +583,8 @@ INSERT INTO product_prices (
 `
 
 type UpdateProductPriceParams struct {
-	ProductID uuid.UUID
-	Price     int32
+	ProductID uuid.UUID `json:"product_id"`
+	Price     int32     `json:"price"`
 }
 
 func (q *Queries) UpdateProductPrice(ctx context.Context, arg UpdateProductPriceParams) (sql.Result, error) {
@@ -392,8 +598,8 @@ WHERE id = $1
 `
 
 type UpdateProductStockParams struct {
-	ID    uuid.UUID
-	Stock int32
+	ID    uuid.UUID `json:"id"`
+	Stock int32     `json:"stock"`
 }
 
 func (q *Queries) UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) (sql.Result, error) {

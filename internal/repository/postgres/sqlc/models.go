@@ -11,55 +11,55 @@ import (
 )
 
 type Order struct {
-	ID             uuid.UUID
-	UserID         uuid.UUID
-	ProductPriceID uuid.UUID
-	Quantity       int32
-	Status         interface{}
-	Description    string
-	CreatedAt      time.Time
+	ID             uuid.UUID   `json:"id"`
+	UserID         uuid.UUID   `json:"user_id"`
+	ProductPriceID uuid.UUID   `json:"product_price_id"`
+	Quantity       int32       `json:"quantity"`
+	Status         interface{} `json:"status"`
+	Description    string      `json:"description"`
+	CreatedAt      time.Time   `json:"created_at"`
 }
 
 type Product struct {
-	ID          uuid.UUID
-	Name        string
-	Stock       int32
-	IsService   bool
-	Description string
-	Image       string
-	CreatedAt   time.Time
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Stock       int32     `json:"stock"`
+	IsService   bool      `json:"is_service"`
+	Description string    `json:"description"`
+	Image       string    `json:"image"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type ProductPrice struct {
-	ID            uuid.UUID
-	ProductID     uuid.UUID
-	Price         int32
-	EffectiveDate time.Time
-	CreatedAt     time.Time
+	ID            uuid.UUID `json:"id"`
+	ProductID     uuid.UUID `json:"product_id"`
+	Price         int32     `json:"price"`
+	EffectiveDate time.Time `json:"effective_date"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 type ProductStock struct {
-	ID         uuid.UUID
-	ProductID  uuid.UUID
-	SupplierID uuid.UUID
-	IsAdd      bool
-	Quantity   int32
-	Price      int32
-	CreatedAt  time.Time
+	ID         uuid.UUID `json:"id"`
+	ProductID  uuid.UUID `json:"product_id"`
+	SupplierID uuid.UUID `json:"supplier_id"`
+	IsAdd      bool      `json:"is_add"`
+	Quantity   int32     `json:"quantity"`
+	Price      int32     `json:"price"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 type Supplier struct {
-	ID        uuid.UUID
-	Name      string
-	CreatedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type User struct {
-	ID           uuid.UUID
-	Name         string
-	Email        string
-	PasswordHash string
-	Address      string
-	Phone        string
-	CreatedAt    time.Time
+	ID           uuid.UUID `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"password_hash"`
+	Address      string    `json:"address"`
+	Phone        string    `json:"phone"`
+	CreatedAt    time.Time `json:"created_at"`
 }

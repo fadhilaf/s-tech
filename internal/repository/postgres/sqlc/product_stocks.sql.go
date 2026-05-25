@@ -56,11 +56,11 @@ INSERT INTO product_stocks (
 `
 
 type InsertProductStockParams struct {
-	ProductID  uuid.UUID
-	SupplierID uuid.UUID
-	IsAdd      bool
-	Quantity   int32
-	Price      int32
+	ProductID  uuid.UUID `json:"product_id"`
+	SupplierID uuid.UUID `json:"supplier_id"`
+	IsAdd      bool      `json:"is_add"`
+	Quantity   int32     `json:"quantity"`
+	Price      int32     `json:"price"`
 }
 
 func (q *Queries) InsertProductStock(ctx context.Context, arg InsertProductStockParams) (sql.Result, error) {

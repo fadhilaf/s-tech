@@ -13,6 +13,11 @@ type ProductUsecase interface {
 	GetProductById(id string) model.WebServiceResponse
 	GetSuppliers() model.WebServiceResponse
 	DeleteSupplier(id string) model.WebServiceResponse
+	UpdateProductDetails(req model.UpdateProductDetailsRequest) model.WebServiceResponse
+	UpdateProductPrice(req model.UpdateProductPriceRequest) model.WebServiceResponse
+	GetProductPrices(req model.GetProductPricesRequest) model.WebServiceResponse
+	GetProductChronology(req model.GetProductChronologyRequest) model.WebServiceResponse
+	GetAllChronology() model.WebServiceResponse
 }
 
 var _ ProductUsecase = &productUsecaseImpl{}

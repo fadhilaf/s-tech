@@ -13,6 +13,11 @@ type ProductDelivery interface {
 	GetProductById(ctx *gin.Context)
 	GetSuppliers(ctx *gin.Context)
 	DeleteSupplier(ctx *gin.Context)
+	UpdateProductDetails(ctx *gin.Context)
+	UpdateProductPrice(ctx *gin.Context)
+	GetProductPrices(ctx *gin.Context)
+	GetProductChronology(ctx *gin.Context)
+	GetAllChronology(ctx *gin.Context)
 }
 
 var _ ProductDelivery = &productHandler{}

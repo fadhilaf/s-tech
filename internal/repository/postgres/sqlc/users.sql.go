@@ -21,11 +21,11 @@ INSERT INTO users (
 `
 
 type CreateUserParams struct {
-	Name         string
-	Email        string
-	PasswordHash string
-	Address      string
-	Phone        string
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	PasswordHash string `json:"password_hash"`
+	Address      string `json:"address"`
+	Phone        string `json:"phone"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {
@@ -94,9 +94,9 @@ ORDER BY name
 `
 
 type GetUsersRow struct {
-	ID    uuid.UUID
-	Name  string
-	Email string
+	ID    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Email string    `json:"email"`
 }
 
 func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
@@ -131,10 +131,10 @@ WHERE id = $1
 `
 
 type UpdateUserParams struct {
-	ID      uuid.UUID
-	Name    string
-	Address string
-	Phone   string
+	ID      uuid.UUID `json:"id"`
+	Name    string    `json:"name"`
+	Address string    `json:"address"`
+	Phone   string    `json:"phone"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (sql.Result, error) {

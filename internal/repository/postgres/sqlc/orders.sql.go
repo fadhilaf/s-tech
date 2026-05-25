@@ -21,10 +21,10 @@ INSERT INTO orders (
 `
 
 type CreateOrderParams struct {
-	UserID         uuid.UUID
-	ProductPriceID uuid.UUID
-	Quantity       int32
-	Description    string
+	UserID         uuid.UUID `json:"user_id"`
+	ProductPriceID uuid.UUID `json:"product_price_id"`
+	Quantity       int32     `json:"quantity"`
+	Description    string    `json:"description"`
 }
 
 func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (sql.Result, error) {
@@ -147,9 +147,9 @@ WHERE id = $1
 `
 
 type UpdateOrderParams struct {
-	ID          uuid.UUID
-	Status      interface{}
-	Description string
+	ID          uuid.UUID   `json:"id"`
+	Status      interface{} `json:"status"`
+	Description string      `json:"description"`
 }
 
 func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (sql.Result, error) {
@@ -163,8 +163,8 @@ WHERE id = $1
 `
 
 type UpdateOrderStatusParams struct {
-	ID     uuid.UUID
-	Status interface{}
+	ID     uuid.UUID   `json:"id"`
+	Status interface{} `json:"status"`
 }
 
 func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (sql.Result, error) {

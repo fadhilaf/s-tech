@@ -21,6 +21,7 @@ type Querier interface {
 	DeleteProduct(ctx context.Context, id uuid.UUID) error
 	DeleteSupplier(ctx context.Context, id uuid.UUID) error
 	DeleteUser(ctx context.Context, id uuid.UUID) error
+	GetAllChronology(ctx context.Context) ([]GetAllChronologyRow, error)
 	GetOrderById(ctx context.Context, id uuid.UUID) (Order, error)
 	GetOrders(ctx context.Context) ([]Order, error)
 	GetOrdersByUserId(ctx context.Context, userID uuid.UUID) ([]Order, error)
@@ -29,6 +30,8 @@ type Querier interface {
 	GetProductByName(ctx context.Context, name string) (GetProductByNameRow, error)
 	GetProductByPriceId(ctx context.Context, id uuid.UUID) (GetProductByPriceIdRow, error)
 	GetProductByQuery(ctx context.Context, name string) ([]GetProductByQueryRow, error)
+	GetProductChronology(ctx context.Context, productID uuid.UUID) ([]GetProductChronologyRow, error)
+	GetProductPricesByProductId(ctx context.Context, productID uuid.UUID) ([]ProductPrice, error)
 	GetProductStocksByProductId(ctx context.Context, productID uuid.UUID) ([]ProductStock, error)
 	GetSupplierById(ctx context.Context, id uuid.UUID) (Supplier, error)
 	GetSuppliers(ctx context.Context) ([]Supplier, error)
@@ -39,6 +42,7 @@ type Querier interface {
 	UpdateOrder(ctx context.Context, arg UpdateOrderParams) (sql.Result, error)
 	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (sql.Result, error)
 	UpdateProduct(ctx context.Context, arg UpdateProductParams) (sql.Result, error)
+	UpdateProductDetails(ctx context.Context, arg UpdateProductDetailsParams) (sql.Result, error)
 	UpdateProductPrice(ctx context.Context, arg UpdateProductPriceParams) (sql.Result, error)
 	UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) (sql.Result, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (sql.Result, error)

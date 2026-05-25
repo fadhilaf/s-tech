@@ -43,3 +43,24 @@ type GetProductByIdRequest struct {
 type GetProductByKeywordRequest struct {
 	Keyword string `form:"search"`
 }
+
+type UpdateProductDetailsRequest struct {
+	ID          uuid.UUID
+	Name        string `form:"name" binding:"required"`
+	Description string `form:"description" binding:"required"`
+	Image       string
+}
+
+type UpdateProductPriceRequest struct {
+	ProductID    uuid.UUID
+	Price        int32  `form:"price" binding:"required"`
+	EffectiveDate string `form:"effective_date" binding:"required"`
+}
+
+type GetProductChronologyRequest struct {
+	ProductID uuid.UUID
+}
+
+type GetProductPricesRequest struct {
+	ProductID uuid.UUID
+}
