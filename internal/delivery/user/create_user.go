@@ -18,7 +18,14 @@ func (handler *userHandler) CreateUser(ctx *gin.Context) {
 	}
 	res := handler.usecase.CreateUser(req)
 
-	if res.Status == http.StatusCreated || res.Status == http.StatusOK {
+	if res.Status == http.StatusConflict {
+		if errors, ok := res.Data["errors"].(map[string]string); ok {
+			detailedRes := utils.ToDetailedErrorWebServiceResponse(res.Message, http.StatusConflict, errors)
+			ctx.JSON(detailedRes.Status, detailedRes)
+			return
+		}
+
+	} else if res.Status == http.StatusCreated || res.Status == http.StatusOK {
 		ctx.Header("HX-Redirect", "/login")
 	}
 
