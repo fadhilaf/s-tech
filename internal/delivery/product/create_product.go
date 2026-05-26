@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (handler *productHandler) CreateProduct(ctx *gin.Context) {
+func (delivery *productHandler) CreateProduct(ctx *gin.Context) {
 	var req model.CreateProductNoFileFormRequest
 
 	ok := utils.BindFormAndValidate(ctx, &req)
@@ -24,9 +24,9 @@ func (handler *productHandler) CreateProduct(ctx *gin.Context) {
 	}
 
 	filename := ""
-	if !handler.IsStaticCloud {
+	if !delivery.IsStaticCloud {
 		// Simpan upload file ke folder assets/images
-		filename, ok = utils.SaveFileFromForm(ctx, "image", handler.AppStaticPath+"/img/")
+		filename, ok = utils.SaveFileFromForm(ctx, "image", delivery.AppStaticPath+"/img/")
 		if !ok {
 			return
 		}
@@ -41,7 +41,7 @@ func (handler *productHandler) CreateProduct(ctx *gin.Context) {
 		Description: req.Description,
 	}
 
-	res := handler.usecase.CreateProduct(model.CreateProductRequest{
+	res := delivery.usecase.CreateProduct(model.CreateProductRequest{
 		ProductNoFile: productNoFile,
 		Image:         filename,
 	})

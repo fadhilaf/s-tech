@@ -30,7 +30,7 @@ func (delivery *productHandler) UpdateProductDetails(c *gin.Context) {
 	if err == nil {
 		extension := filepath.Ext(file.Filename)
 		newFileName := uuid.New().String() + extension
-		if err := c.SaveUploadedFile(file, "public/img/"+newFileName); err != nil {
+		if err := c.SaveUploadedFile(file, delivery.AppStaticPath+"/img/"+newFileName); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to save image: %s", err.Error())})
 			return
 		}
@@ -38,11 +38,11 @@ func (delivery *productHandler) UpdateProductDetails(c *gin.Context) {
 	}
 
 	res := delivery.usecase.UpdateProductDetails(req)
-	
+
 	if res.Status == http.StatusOK {
 		c.Header("HX-Redirect", "/admin/dashboard")
 	}
-	
+
 	c.JSON(res.Status, res)
 }
 
